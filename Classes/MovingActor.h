@@ -21,7 +21,7 @@ class MovingActor :public Actor
 	CC_SYNTHESIZE(float, _magicDefense, MagicDefense);
 	CC_SYNTHESIZE(Point*, _birthPlace, BirthPlace);
 	CC_SYNTHESIZE(float,_lastBirthTime,LastBrithTime);
-; public:
+public:
 	virtual bool die() ;
 	virtual bool attack() ;
 	//

@@ -65,6 +65,9 @@ bool GameScene::init()
 		_MapLayer->addChild(soldier);
 		soldier->getHealth()->setScale(0.5);
 		soldier->setMoveSpeed(200);
+		
+		soldier->setAttackRadius(200);
+		soldier->setHostilityRadius(400);
 	}
 	//初始化地图里的塔
 	_ourTa1 = Actor::create("map/redTa.png", ECamp::RED);
@@ -569,7 +572,25 @@ void GameScene::soldierMove(ECamp ecamp, MovingActor* soldier)
 	//如果有攻击目标，那么朝向攻击目标移动
 	if (target)
 	{
-		posTarget = soldier->getAttackTarget()->getPosition();
+		//如果在仇恨半径内
+		auto delta = target->getPosition() - soldier->getPosition();
+		auto dis = delta.length();
+		if (dis < soldier->getHostilityRadius())
+		{
+			posTarget = soldier->getAttackTarget()->getPosition();
+		}
+		//不在仇恨半径内
+		else
+		{
+			if (ecamp == ECamp::BLUE)
+			{
+				posTarget = _ourBirthPlace;
+			}
+			else
+			{
+				posTarget = _enemyBirthPlace;
+			}
+		}
 
 	}
 	//如果没有攻击目标那么朝向默认目标移动
@@ -595,6 +616,7 @@ void GameScene::soldierMove(ECamp ecamp, MovingActor* soldier)
 //小战士攻击AI
 void GameScene::soldierAI(ECamp, MovingActor * soldier)
 {
+	bool inRadius = false;
 	auto nowTime = GetCurrentTime() / 1000;
 	if (soldier->getLastAttackTime() == NULL)
 	{
@@ -602,16 +624,37 @@ void GameScene::soldierAI(ECamp, MovingActor * soldier)
 	}
 	if (nowTime - soldier->getLastAttackTime() > soldier->getMinAttackInterval())
 	{
-		//如果被攻击那么攻击目标更新为攻击源头
+		//优先判断 如果被攻击那么攻击目标更新为攻击源头
 		if (soldier->getLastAttackFrom())
 		{
-			soldier->setAttackTarget(soldier->getLastAttackFrom());
+			auto delta = soldier->getPosition() - soldier->getLastAttackFrom()->getPosition();
+			auto dis = delta.length();
+			//在仇恨半径内，才会产生攻击倾向
+			if (dis < soldier->getHostilityRadius())
+			{
+				soldier->setAttackTarget(soldier->getLastAttackFrom());
+			}
+			else
+			{
+				soldier->setLastAttackFrom(NULL);
+			}
 		}
 		auto target = soldier->getAttackTarget();
-		//如果有攻击对象，保持攻击
+
+		//如果有攻击对象，并且在攻击目标的攻击距离内,保持攻击
 		if (target)
 		{
-			soldier->setAttackTarget(target);
+			auto delta = target->getPosition() - soldier->getPosition();
+			auto dis = delta.length();
+			if (dis < soldier->getAttackRadius())
+			{
+				soldier->setAttackTarget(target);
+				inRadius = true;
+			}
+			else
+			{
+				//有攻击目标，但是攻击目标不在攻击半径内，不攻击，不更新
+			}
 		}
 		else
 		{
@@ -619,8 +662,8 @@ void GameScene::soldierAI(ECamp, MovingActor * soldier)
 
 
 		}
-		//更新完攻击对象后，如果有攻击对象
-		if (target)
+		//更新完攻击对象后，如果有攻击对象，产生飞行物
+		if (target&&inRadius)
 		{
 			auto projectile = Projectile::create(soldier->getAttack(), SPEED_FLY, soldier, target);
 			_projectiles.pushBack(projectile);
