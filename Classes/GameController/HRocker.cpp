@@ -1,9 +1,8 @@
-#include "HRocker.h"
-#include "Constant.h"
+ï»¿#include "HRocker.h"
 #include <functional>
-USING_NS_CC;
 
-HRocker* HRocker::createHRocker(const char *rockerImageName, const char *rockerBGImageName, Point position)
+
+HRocker* HRocker::createHRocker(const char* rockerImageName, const char* rockerBGImageName, Point position)
 {
 	HRocker* layer = HRocker::create();
 	if (layer)
@@ -14,26 +13,26 @@ HRocker* HRocker::createHRocker(const char *rockerImageName, const char *rockerB
 	CC_SAFE_DELETE(layer);
 	return NULL;
 }
-void HRocker::rockerInit(const char *rockerImageName, const char *rockerBGImageName, Point position)
+void HRocker::rockerInit(const char* rockerImageName, const char* rockerBGImageName, Point position)
 {
-	//Ìí¼ÓÒ¡¸Ë±³¾°Í¼  
+	//æ·»åŠ æ‘‡æ†èƒŒæ™¯å›¾  
 	Sprite* spRockerBG = Sprite::create(rockerBGImageName);
 	spRockerBG->setVisible(false);
 	spRockerBG->setPosition(position);
-	addChild(spRockerBG, 0, tag_rockerBG);
-	//Ìí¼ÓÒ¡¸ËÉÏ·½ÄÇ¸ö¿ÉÒÆ¶¯µÄÍ¼  
+	addChild(spRockerBG, 0, TAG_ROCKERBG);
+	//æ·»åŠ æ‘‡æ†ä¸Šæ–¹é‚£ä¸ªå¯ç§»åŠ¨çš„å›¾  
 	Sprite* spRocker = Sprite::create(rockerImageName);
 	spRocker->setVisible(false);
 	spRocker->setPosition(position);
-	addChild(spRocker, 1, tag_rocker);
+	addChild(spRocker, 1, TAG_ROCKER);
 	spRocker->setOpacity(180);
-	//Ò¡¸Ë±³¾°Í¼×ø±ê  
+	//æ‘‡æ†èƒŒæ™¯å›¾åæ ‡  
 	rockerBGPosition = position;
-	//Ò¡¸Ë±³¾°Í¼°ë¾¶  
-	rockerBGR = spRockerBG->getContentSize().width*0.5;
+	//æ‘‡æ†èƒŒæ™¯å›¾åŠå¾„  
+	rockerBGR = spRockerBG->getContentSize().width * 0.5;
 	listener = EventListenerTouchOneByOne::create();
 	listenerKeyBoard = EventListenerKeyboard::create();
-	// °ó¶¨¼àÌıÊÂ¼ş
+	// ç»‘å®šç›‘å¬äº‹ä»¶
 	listener->onTouchBegan = CC_CALLBACK_2(HRocker::onTouchBegan, this);
 	listener->onTouchMoved = CC_CALLBACK_2(HRocker::onTouchMoved, this);
 	listener->onTouchEnded = CC_CALLBACK_2(HRocker::onTouchEnded, this);
@@ -43,166 +42,163 @@ void HRocker::rockerInit(const char *rockerImageName, const char *rockerBGImageN
 
 	listener->setSwallowTouches(true);
 }
-//Æô¶¯Ò¡¸Ë  
+//å¯åŠ¨æ‘‡æ†  
 void HRocker::startRocker(bool _isStopOther)
 {
-	//¾«ÁéÉèÖÃ¿É¼û£¬ÉèÖÃ¼àÌı  
-	Sprite* rocker = (Sprite*)getChildByTag(tag_rocker);
+	//ç²¾çµè®¾ç½®å¯è§ï¼Œè®¾ç½®ç›‘å¬  
+	Sprite* rocker = (Sprite*)getChildByTag(TAG_ROCKER);
 	rocker->setVisible(true);
-	Sprite* rockerBG = (Sprite*)getChildByTag(tag_rockerBG);
+	Sprite* rockerBG = (Sprite*)getChildByTag(TAG_ROCKERBG);
 	rockerBG->setVisible(true);
 	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
 	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listenerKeyBoard, this);
 }
-//Í£Ö¹Ò¡¸Ë  
+//åœæ­¢æ‘‡æ†  
 void HRocker::stopRocker()
 {
-	//¾«ÁéÉèÖÃ²»¿É¼û£¬È¡Ïû¼àÌı  
-	Sprite* rocker = (Sprite*)getChildByTag(tag_rocker);
+	//ç²¾çµè®¾ç½®ä¸å¯è§ï¼Œå–æ¶ˆç›‘å¬  
+	Sprite* rocker = (Sprite*)getChildByTag(TAG_ROCKER);
 	rocker->setVisible(false);
-	Sprite* rockerBG = (Sprite*)getChildByTag(tag_rockerBG);
+	Sprite* rockerBG = (Sprite*)getChildByTag(TAG_ROCKERBG);
 	rockerBG->setVisible(false);
 	Director::getInstance()->getEventDispatcher()->removeEventListener(listener);
 }
-//µÃµ½Á½×ø±êµÄ½Ç¶ÈÖµ  
+//å¾—åˆ°ä¸¤åæ ‡çš„è§’åº¦å€¼  
 float HRocker::getRad(Point pos1, Point pos2)
 {
-	//µÃµ½Á½µãµÄ×ø±êx,y×ø±êÖµ  
+	//å¾—åˆ°ä¸¤ç‚¹çš„åæ ‡x,yåæ ‡å€¼  
 	float px1 = pos1.x;
 	float py1 = pos1.y;
 	float px2 = pos2.x;
 	float py2 = pos2.y;
-	//Çó³öÁ½±ß³¤¶È  
+	//æ±‚å‡ºä¸¤è¾¹é•¿åº¦  
 	float x = px2 - px1;
 	float y = py1 - py2;
-	//¿ª·½   Óë  ¼¸´Î·½ ¹«Ê½  
+	//å¼€æ–¹   ä¸  å‡ æ¬¡æ–¹ å…¬å¼  
 	float xie = sqrt(pow(x, 2) + pow(y, 2));
 	float cos = x / xie;
-	//·´ÓàÏÒ¶¨Àí£¬ÖªµÀÁ½±ß³¤Çó½Ç¶È£ºcos = ÁÚ±ß/Ğ±±ß  
+	//åä½™å¼¦å®šç†ï¼ŒçŸ¥é“ä¸¤è¾¹é•¿æ±‚è§’åº¦ï¼šcos = é‚»è¾¹/æ–œè¾¹  
 	float rad = acos(cos);
-	//µ±´¥ÆÁY×ø±ê <Ò¡¸ËµÄY×ø±êÊ±£¬È¡·´Öµ  
+	//å½“è§¦å±Yåæ ‡ <æ‘‡æ†çš„Yåæ ‡æ—¶ï¼Œå–åå€¼  
 	if (py1 > py2)
 	{
-		rad = -rad;
+		rad = 2 * M_PI - rad;
 	}
 	return rad;
 }
-//µÃµ½Óë½Ç¶È¶ÔÓ¦µÄ°ë¾¶ÎªrµÄÔ²ÉÏÒ»×ø±êµã  
+//å¾—åˆ°ä¸è§’åº¦å¯¹åº”çš„åŠå¾„ä¸ºrçš„åœ†ä¸Šä¸€åæ ‡ç‚¹  
 Point HRocker::getAnglePosition(float r, float angle)
 {
-	return ccp(r*cos(angle), r*sin(angle));
+	return ccp(r * cos(angle), r * sin(angle));
 }
-bool HRocker::onTouchBegan(Touch *touch, Event *event)
+bool HRocker::onTouchBegan(Touch* touch, Event* event)
 {
 
-	Sprite* sp = (Sprite*)getChildByTag(tag_rocker);
-	//µÃµ½´¥ÆÁµã×ø±ê  
+	Sprite* sp = (Sprite*)getChildByTag(TAG_ROCKER);
+	//å¾—åˆ°è§¦å±ç‚¹åæ ‡  
 	Point point = touch->getLocation();
-	//ÅĞ¶ÏÊÇ·ñµã»÷µ½spÕâ¸ö¾«Áé£ºboundingBox()¾«Áé´óĞ¡Ö®ÄÚµÄËùÓĞ×ø±ê  
+	//åˆ¤æ–­æ˜¯å¦ç‚¹å‡»åˆ°spè¿™ä¸ªç²¾çµï¼šboundingBox()ç²¾çµå¤§å°ä¹‹å†…çš„æ‰€æœ‰åæ ‡  
 	if (sp->boundingBox().containsPoint(point))
 	{
 		isCanMove = true;
 	}
 	return true;
 }
-void HRocker::onTouchMoved(Touch *touch, Event *event)
+void HRocker::onTouchMoved(Touch* touch, Event* event)
 {
 	if (!isCanMove)
 	{
 		return;
 	}
-	Sprite* sp = (Sprite*)getChildByTag(tag_rocker);
+	Sprite* sp = (Sprite*)getChildByTag(TAG_ROCKER);
 	Point point = touch->getLocation();
-	//ÅĞ¶ÏÁ½¸öÔ²ĞÄµÄ¾àÀëÊÇ·ñ´óÓÚÒ¡¸Ë±³¾°µÄ°ë¾¶  
+	_angle = getRad(rockerBGPosition, point);
+	//åˆ¤æ–­ä¸¤ä¸ªåœ†å¿ƒçš„è·ç¦»æ˜¯å¦å¤§äºæ‘‡æ†èƒŒæ™¯çš„åŠå¾„  
 	if (sqrt(pow(point.x - rockerBGPosition.x, 2) + pow(point.y - rockerBGPosition.y, 2)) >= rockerBGR)
 	{
-		//µÃµ½´¥µãÓëÒ¡¸Ë±³¾°Ô²ĞÄĞÎ³ÉµÄ½Ç¶È  
-		float angle = getRad(rockerBGPosition, point);
-		//È·±£Ğ¡Ô²ÔË¶¯·¶Î§ÔÚ±³¾°Ô²ÄÚ  
-		sp->setPosition(ccpAdd(getAnglePosition(rockerBGR, angle), ccp(rockerBGPosition.x, rockerBGPosition.y)));
+		//ç¡®ä¿å°åœ†è¿åŠ¨èŒƒå›´åœ¨èƒŒæ™¯åœ†å†…  
+		sp->setPosition(ccpAdd(getAnglePosition(rockerBGR, _angle), ccp(rockerBGPosition.x, rockerBGPosition.y)));
 	}
 	else
 	{
-		//´¥µãÔÚ±³¾°Ô²ÄÚÔò¸úËæ´¥µãÔË¶¯  
+		//è§¦ç‚¹åœ¨èƒŒæ™¯åœ†å†…åˆ™è·Ÿéšè§¦ç‚¹è¿åŠ¨
 		sp->setPosition(point);
 	}
 }
-void HRocker::onTouchEnded(Touch *touch, Event *event)
+void HRocker::onTouchEnded(Touch* touch, Event* event)
 {
 	if (!isCanMove)
 	{
 		return;
 	}
-	Sprite* rocker = (Sprite*)getChildByTag(tag_rocker);
-	Sprite* rockerBG = (Sprite*)getChildByTag(tag_rockerBG);
+	Sprite* rocker = (Sprite*)getChildByTag(TAG_ROCKER);
+	Sprite* rockerBG = (Sprite*)getChildByTag(TAG_ROCKERBG);
 	rocker->stopAllActions();
 	rocker->runAction(MoveTo::create(0.08, rockerBG->getPosition()));
 
 	isCanMove = false;
 }
-bool HRocker::onPressKey(EventKeyboard::KeyCode keyCode, Event * envet)
+bool HRocker::onPressKey(EventKeyboard::KeyCode keyCode, Event* envet)
 {
 	updateState(keyCode, PRESS);
-	Sprite* rocker = (Sprite*)getChildByTag(tag_rocker);
-	Sprite* rockerBG = (Sprite*)getChildByTag(tag_rockerBG);
+	Sprite* rocker = (Sprite*)getChildByTag(TAG_ROCKER);
+	Sprite* rockerBG = (Sprite*)getChildByTag(TAG_ROCKERBG);
 	rocker->stopAllActions();
 	isCanMove = true;
 	Point point;
+
+	if (_direction == EDirection::NODIR)
+	{
+		isCanMove = false;
+		return false;
+	}
+
 	switch (_direction)
 	{
-	case Direction::down:
+	case EDirection::DOWN:
 	{
-		point = Point(rockerBGPosition.x, rockerBGPosition.y-rockerBGR);
+		point = Point(rockerBGPosition.x, rockerBGPosition.y - rockerBGR);
 		break;
 	}
-	case Direction::down_left:
+	case EDirection::DOWNLEFT:
 	{
-		point = Point(rockerBGPosition.x- rockerBGR, rockerBGPosition.y- rockerBGR);
+		point = Point(rockerBGPosition.x - rockerBGR, rockerBGPosition.y - rockerBGR);
 		break;
 	}
-	case Direction::down_right:
+	case EDirection::DOWNRIGHT:
 	{
-		point = Point(rockerBGPosition.x+ rockerBGR, rockerBGPosition.y- rockerBGR);
+		point = Point(rockerBGPosition.x + rockerBGR, rockerBGPosition.y - rockerBGR);
 		break;
 	}
-	case Direction::up:
+	case EDirection::UP:
 	{
-		point = Point(rockerBGPosition.x, rockerBGPosition.y+ rockerBGR);
+		point = Point(rockerBGPosition.x, rockerBGPosition.y + rockerBGR);
 		break;
 	}
-	case Direction::up_left:
+	case EDirection::UPLEFT:
 	{
-		point = Point(rockerBGPosition.x- rockerBGR, rockerBGPosition.y+ rockerBGR);
+		point = Point(rockerBGPosition.x - rockerBGR, rockerBGPosition.y + rockerBGR);
 		break;
 	}
-	case Direction::up_right:
+	case EDirection::UPRIGHT:
 	{
-		point = Point(rockerBGPosition.x+ rockerBGR, rockerBGPosition.y+ rockerBGR);
+		point = Point(rockerBGPosition.x + rockerBGR, rockerBGPosition.y + rockerBGR);
 		break;
 	}
-	case Direction::left:
+	case EDirection::LEFT:
 	{
-		point = Point(rockerBGPosition.x- rockerBGR, rockerBGPosition.y);
+		point = Point(rockerBGPosition.x - rockerBGR, rockerBGPosition.y);
 		break;
 	}
-	case Direction::right:
+	case EDirection::RIGHT:
 	{
-		point = Point(rockerBGPosition.x+ rockerBGR, rockerBGPosition.y);
-		break;
-	}
-	case Direction::noDir:
-	{
-		point = Point(rockerBGPosition.x, rockerBGPosition.y);
-		break;
-	}
-	default:
-	{
-		point = Point(rockerBGPosition.x, rockerBGPosition.y);
+		point = Point(rockerBGPosition.x + rockerBGR, rockerBGPosition.y);
 		break;
 	}
 	}
-	float angle = getRad(rockerBGPosition, point);
-	rocker->setPosition(ccpAdd(getAnglePosition(rockerBGR, angle), ccp(rockerBGPosition.x, rockerBGPosition.y)));
+
+	_angle = getRad(rockerBGPosition, point);
+	rocker->setPosition(ccpAdd(getAnglePosition(rockerBGR, _angle), ccp(rockerBGPosition.x, rockerBGPosition.y)));
 	return true;
 }
 
@@ -213,63 +209,64 @@ bool HRocker::onReleaseKey(EventKeyboard::KeyCode keyCode, Event * envet)
 	{
 		return true;
 	}
-	if (_direction == noDir)
+	if (_direction == EDirection::NODIR)
 	{
-		Sprite* rocker = (Sprite*)getChildByTag(tag_rocker);
-		Sprite* rockerBG = (Sprite*)getChildByTag(tag_rockerBG);
+		Sprite* rocker = (Sprite*)getChildByTag(TAG_ROCKER);
+		Sprite* rockerBG = (Sprite*)getChildByTag(TAG_ROCKERBG);
 		rocker->stopAllActions();
 		rocker->runAction(MoveTo::create(0.08, rockerBG->getPosition()));
+		isCanMove = false;
 	}
 	else
 	{
-		Sprite* rocker = (Sprite*)getChildByTag(tag_rocker);
-		Sprite* rockerBG = (Sprite*)getChildByTag(tag_rockerBG);
+		Sprite* rocker = (Sprite*)getChildByTag(TAG_ROCKER);
+		Sprite* rockerBG = (Sprite*)getChildByTag(TAG_ROCKERBG);
 		rocker->stopAllActions();
 		isCanMove = true;
 		Point point;
 		switch (_direction)
 		{
-		case Direction::down:
+		case EDirection::DOWN:
 		{
 			point = Point(rockerBGPosition.x, rockerBGPosition.y - rockerBGR);
 			break;
 		}
-		case Direction::down_left:
+		case EDirection::DOWNLEFT:
 		{
 			point = Point(rockerBGPosition.x - rockerBGR, rockerBGPosition.y - rockerBGR);
 			break;
 		}
-		case Direction::down_right:
+		case EDirection::DOWNRIGHT:
 		{
 			point = Point(rockerBGPosition.x + rockerBGR, rockerBGPosition.y - rockerBGR);
 			break;
 		}
-		case Direction::up:
+		case EDirection::UP:
 		{
 			point = Point(rockerBGPosition.x, rockerBGPosition.y + rockerBGR);
 			break;
 		}
-		case Direction::up_left:
+		case EDirection::UPLEFT:
 		{
 			point = Point(rockerBGPosition.x - rockerBGR, rockerBGPosition.y + rockerBGR);
 			break;
 		}
-		case Direction::up_right:
+		case EDirection::UPRIGHT:
 		{
 			point = Point(rockerBGPosition.x + rockerBGR, rockerBGPosition.y + rockerBGR);
 			break;
 		}
-		case Direction::left:
+		case EDirection::LEFT:
 		{
 			point = Point(rockerBGPosition.x - rockerBGR, rockerBGPosition.y);
 			break;
 		}
-		case Direction::right:
+		case EDirection::RIGHT:
 		{
 			point = Point(rockerBGPosition.x + rockerBGR, rockerBGPosition.y);
 			break;
 		}
-		case Direction::noDir:
+		case EDirection::NODIR:
 		{
 			point = Point(rockerBGPosition.x, rockerBGPosition.y);
 			break;
@@ -280,8 +277,8 @@ bool HRocker::onReleaseKey(EventKeyboard::KeyCode keyCode, Event * envet)
 			break;
 		}
 		}
-		float angle = getRad(rockerBGPosition, point);
-		rocker->setPosition(ccpAdd(getAnglePosition(rockerBGR, angle), ccp(rockerBGPosition.x, rockerBGPosition.y)));
+		_angle = getRad(rockerBGPosition, point);
+		rocker->setPosition(ccpAdd(getAnglePosition(rockerBGR, _angle), ccp(rockerBGPosition.x, rockerBGPosition.y)));
 	}
 
 	return true;
@@ -356,45 +353,45 @@ bool HRocker::updateDirection()
 	{
 		if (_aState)
 		{
-			_direction = Direction::up_left;
+			_direction = EDirection::UPLEFT;
 		}
 		else if (_dState)
 		{
-			_direction = Direction::up_right;
+			_direction = EDirection::UPRIGHT;
 		}
 		else
 		{
-			_direction = Direction::up;
+			_direction = EDirection::UP;
 		}
 	}
-	else if(_sState)
+	else if (_sState)
 	{
 		if (_aState)
 		{
-			_direction = Direction::down_left;
+			_direction = EDirection::DOWNLEFT;
 		}
 		else if (_dState)
 		{
-			_direction = Direction::down_right;
+			_direction = EDirection::DOWNRIGHT;
 		}
 		else
 		{
-			_direction = Direction::down;
+			_direction = EDirection::DOWN;
 		}
 	}
 	else
 	{
 		if (_aState)
 		{
-			_direction = Direction::left;
+			_direction = EDirection::LEFT;
 		}
 		else if (_dState)
 		{
-			_direction = Direction::right;
+			_direction = EDirection::RIGHT;
 		}
 		else
 		{
-			_direction = Direction::noDir;
+			_direction = EDirection::NODIR;
 		}
 	}
 	return true;

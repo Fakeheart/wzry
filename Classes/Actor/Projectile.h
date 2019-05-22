@@ -13,7 +13,7 @@ class Projectile :public Sprite
 	CC_SYNTHESIZE(float, _speed, Speed);
 	CC_SYNTHESIZE(Actor*, _fromActor, FromActor);
 	CC_SYNTHESIZE(Actor*, _target, Target);
-
+	
 public:
 
 	virtual bool init(float damage, float speed, Actor* fromActor, Actor* target);

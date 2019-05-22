@@ -1,7 +1,8 @@
 #include "Projectile.h"
 #include "Actor.h"
 #include "math.h"
-#include "Constant.h"
+
+#define PI 3.1415926
 
 Projectile* Projectile::create(float damge, float speed, Actor* fromActor, Actor* target)
 {
@@ -43,7 +44,7 @@ float Projectile::getAngle() const
 	auto dy = delta.y;
 
 	auto angle = atan(dy / dx);
-
+	
 	log("angle : %f", angle);
 
 	if (angle > 0)
