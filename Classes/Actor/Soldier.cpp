@@ -1,9 +1,9 @@
 #include "Soldier.h"
 
-Soldier* Soldier::create(EAttackMode attackMode, ECamp camp, ERoad road)
+Soldier* Soldier::create(EAttackMode attackMode, ECamp camp, ERoad road, GameScene* scene)
 {
 	Soldier* soldier = new(std::nothrow)Soldier;
-	if (soldier && soldier->init(attackMode, camp, road))
+	if (soldier && soldier->init(attackMode, camp, road, scene))
 	{
 		soldier->autorelease();
 		return soldier;
@@ -12,33 +12,95 @@ Soldier* Soldier::create(EAttackMode attackMode, ECamp camp, ERoad road)
 	return nullptr;
 }
 
-bool Soldier::init(EAttackMode attackMode, ECamp camp, ERoad road)
+bool Soldier::init(EAttackMode attackMode, ECamp camp, ERoad road, GameScene* scene)
 {
 	if (!Sprite::init())
 	{
 		return false;
 	}
-	
+	_combatScene = scene;
 	initData(attackMode,camp,road);
 	initHealthComp();
-
 	return true;
 }
 
 void Soldier::initData(EAttackMode attackMode, ECamp camp, ERoad road)
 {
-	setTexture("pictures\\soldier\\BlueDown.png");
+	//初始化
+
+	//根据攻击模式和阵营初始化纹理
+	if (camp == ECamp::BLUE)
+	{
+		if (attackMode == EAttackMode::MELEE)
+		{
+			setTexture("pictures\\soldier\\BlueDown.png");
+
+		}
+		else if (attackMode == EAttackMode::REMOTE)
+		{
+			setTexture("pictures\\soldier\\BlueDown.png");
+
+		}
+		else
+		{
+			setTexture("pictures\\soldier\\BlueDown.png");
+
+		}
+	}
+	else if (camp == ECamp::RED)
+	{
+		if (attackMode == EAttackMode::MELEE)
+		{
+			setTexture("pictures\\soldier\\BlueDown.png");
+
+		}
+		else if (attackMode == EAttackMode::REMOTE)
+		{
+			setTexture("pictures\\soldier\\BlueDown.png");
+
+		}
+		else
+		{
+			setTexture("pictures\\soldier\\BlueDown.png");
+
+		}
+	}
+	else
+	{
+		if (attackMode == EAttackMode::MELEE)
+		{
+			setTexture("pictures\\soldier\\BlueDown.png");
+
+		}
+		else if (attackMode == EAttackMode::REMOTE)
+		{
+			setTexture("pictures\\soldier\\BlueDown.png");
+
+		}
+		else
+		{
+			setTexture("pictures\\soldier\\BlueDown.png");
+
+		}
+	}
 
 	_camp = camp;
+
 	_defense = SOLDIER_ARMOR;
+	_magicDefense = SOLDIER_MAGIC_DEFENSE;
 	_attack = SOLDIER_ATTACK;
 	_attackRadius = attackMode == EAttackMode::MELEE ? DEFAULT_ATTACK_RADIUS_MELEE : DEFAULT_ATTACK_RADIUS_REMOTE;
-	_alreadyDead = false;
-	_magicDefense = SOLDIER_MAGIC_DEFENSE;
+	
 	_lastAttackTime = 0;
+	_lastAttackFrom = NULL;
+	_attackTarget = NULL;
+	
+	_alreadyDead = false;
+	
 	_moveSpeed = SOLDIER_MOVE_SPEED;
 	_isMovingToDest = false;
-	_arrivedFirstDest = false;
+	
+	_isArrivedFirstDest = false;
 	_isDisturbed = false;
 
 	if (camp == ECamp::BLUE)
@@ -92,6 +154,3 @@ void Soldier::initHealthComp()
 	addChild(_healthComp);
 }
 
-void Soldier::moveToNextDest()
-{
-}

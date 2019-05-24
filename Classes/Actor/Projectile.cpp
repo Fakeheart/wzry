@@ -44,12 +44,8 @@ float Projectile::getAngle() const
 	auto dy = delta.y;
 
 	auto angle = atan(dy / dx);
-	
-	log("angle : %f", angle);
-
 	if (angle > 0)
 	{
-		log("dx: %f,   dy: %f", dx, dy);
 		if (dx < 0 && dy < 0)
 		{
 			angle += PI;
@@ -57,14 +53,11 @@ float Projectile::getAngle() const
 	}
 	else if (angle < 0)
 	{
-		log("dx: %f,   dy: %f", dx, dy);
 		if (dx < 0 && dy>0)
 		{
 			angle += PI;
 		}
 	}
-	log("angle after: %f", angle);
-
 	angle = angle / PI * 180;
 
 
@@ -78,7 +71,7 @@ void Projectile::calculatePosition()
 	auto dx = delta.x;
 	auto dy = delta.y;
 	setRotation(getAngle());
-	setPosition(getPosition() + Vec2(dx / distance * _speed, dy / distance * _speed));
+	setPosition(getPosition() + Vec2(dx / distance * _speed / 60, dy / distance * _speed / 60));
 }
 
 float Projectile::calculateDistance() const

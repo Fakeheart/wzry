@@ -3,10 +3,10 @@
 #include "../Component/StateComponent.h"
 #include "Component/ExpComponent.h"
 
-Actor* Actor::create(const std::string& filename, ECamp camp)
+Actor* Actor::create(const std::string& filename, ECamp camp, GameScene* scene)
 {
 	Actor* sprite = new (std::nothrow) Actor();
-	if (sprite && sprite->init(filename, camp))
+	if (sprite && sprite->init(filename, camp, scene))
 	{
 		sprite->autorelease();
 		return sprite;
@@ -15,12 +15,12 @@ Actor* Actor::create(const std::string& filename, ECamp camp)
 	return nullptr;
 }
 
-bool Actor::init(const std::string& filename, ECamp thisCamp)
+bool Actor::init(const std::string& filename, ECamp thisCamp, GameScene* scene)
 {
 	if (!Sprite::initWithFile(filename)) {
 		return false;
 	}
-
+	_combatScene = scene;
 	//auto size = getBoundingBox().size;
 
 	//_health = StateComponent::create(EStateType::HEALTH, 2000, 1);
@@ -47,6 +47,8 @@ void Actor::takeBuff(Buff* buff)
 
 void Actor::takeDamage(INT32 damage, Actor* instigator)
 {
+	_lastAttackFrom = instigator;
+
 	if (_healthComp->getCurrentState() < damage)
 	{
 		_alreadyDead = true;
@@ -60,6 +62,8 @@ bool Actor::attack()
 
 	return false;
 }
+
+
 
 bool Actor::die()
 {

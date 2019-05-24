@@ -50,7 +50,7 @@ void HRocker::startRocker(bool _isStopOther)
 	rocker->setVisible(true);
 	Sprite* rockerBG = (Sprite*)getChildByTag(TAG_ROCKERBG);
 	rockerBG->setVisible(true);
-	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
+	Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(listener->clone(), 2);
 	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listenerKeyBoard, this);
 }
 //停止摇杆  
@@ -101,8 +101,10 @@ bool HRocker::onTouchBegan(Touch* touch, Event* event)
 	if (sp->boundingBox().containsPoint(point))
 	{
 		isCanMove = true;
+		return true;
 	}
-	return true;
+	isCanMove = false;
+	return false;
 }
 void HRocker::onTouchMoved(Touch* touch, Event* event)
 {

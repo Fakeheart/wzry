@@ -9,13 +9,15 @@
 USING_NS_CC;
 using std::vector;
 
+class GameScene;
+
 class Soldier :public MovingActor
 {
 	CC_SYNTHESIZE(bool, _isMovingToDest, IsMovingToDest);
 	CC_SYNTHESIZE(EAttackMode, _attackMode, AttackMode);
 	CC_SYNTHESIZE(Vec2, _firstDest, FirstDest);
 	CC_SYNTHESIZE(Vec2, _secondDest, SecondDest);
-	CC_SYNTHESIZE(bool, _arrivedFirstDest, ArrivedFirstDest);
+	CC_SYNTHESIZE(bool, _isArrivedFirstDest, IsArrivedFirstDest);
 	CC_SYNTHESIZE(bool, _isDisturbed, IsDisturbed);
 	CC_SYNTHESIZE(Actor*, _instigator, Instigator);
 	CC_SYNTHESIZE(vector<Vec2>, _pathPoints, PathPoints);
@@ -29,11 +31,10 @@ private:
 
 public:
 
-	void moveToNextDest();
+	virtual bool init(EAttackMode attackMode, ECamp camp, ERoad road,GameScene* scene);
 
-	virtual bool init(EAttackMode attackMode, ECamp camp, ERoad road);
+	static Soldier* create(EAttackMode attackMode, ECamp camp, ERoad road, GameScene* scene);
 
-	static Soldier* create(EAttackMode attackMode, ECamp camp, ERoad road);
 };
 
 

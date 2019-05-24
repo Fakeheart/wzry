@@ -11,6 +11,7 @@
 
 USING_NS_CC;
 
+class GameScene;
 
 class MovingActor :public Actor
 {
@@ -29,9 +30,9 @@ public:
 
 	virtual void takeDamage(float damge, Actor* instigator);
 
-	virtual bool init(const std::string& filename, ECamp camp);
+	virtual bool init(const std::string& filename, ECamp camp,GameScene* scene);
 
-	static MovingActor* create(const std::string& filename, ECamp camp);
+	static MovingActor* create(const std::string& filename, ECamp camp, GameScene* scene);
 
 
 };

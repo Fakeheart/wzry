@@ -4,10 +4,10 @@
 #include "MovingActor.h"
 
 
-MovingActor* MovingActor::create(const std::string& filename, ECamp camp)
+MovingActor* MovingActor::create(const std::string& filename, ECamp camp, GameScene* scene)
 {
 	MovingActor* sprite = new (std::nothrow)MovingActor();
-	if (sprite && sprite->init(filename, camp))
+	if (sprite && sprite->init(filename, camp, scene))
 	{
 		sprite->autorelease();
 		return sprite;
@@ -16,11 +16,12 @@ MovingActor* MovingActor::create(const std::string& filename, ECamp camp)
 	return nullptr;
 }
 
-bool MovingActor::init(const std::string& filename, ECamp thisCamp)
+bool MovingActor::init(const std::string& filename, ECamp thisCamp, GameScene* scene)
 {
 	if (!Sprite::initWithFile(filename)) {
 		return false;
 	}
+	_combatScene = scene;
 	//_health = StateComponent::create(EStateType::HEALTH, 2000, 5);
 	//this->addChild(_health);
 	//_health->setPosition(Vec2(140, 400));
@@ -54,6 +55,16 @@ bool MovingActor::attack()
 
 void MovingActor::takeBuff(Buff* buff)
 {
+	this->getAllBuff().pushBack(buff);
+	_attack += buff->getAttack();
+	_defense += buff->getDefense();
+	_magicDefense += buff->getMagicDefense();
+	_healthComp->changeMaxBy(buff->getHP());
+	_healthComp->changeRecoverRate(buff->getHPRecover());
+	_moveSpeed += buff->getMoveSpeed();
+	_minAttackInterval -= buff->getAttackInterval();
+	
+
 }
 
 void MovingActor::takeDamage(float damge, Actor* instigator)

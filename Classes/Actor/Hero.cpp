@@ -6,10 +6,10 @@
 #include "Component/Bonus.h"
 
 
-Hero* Hero::create(ECamp camp, std::string heroName, EAttackMode attackMode)
+Hero* Hero::create(ECamp camp, std::string heroName, EAttackMode attackMode, GameScene* scene)
 {
 	Hero* hero = new(std::nothrow)Hero;
-	if (hero && hero->init(camp, heroName, attackMode))
+	if (hero && hero->init(scene,camp, heroName, attackMode))
 	{
 		hero->autorelease();
 		return hero;
@@ -18,8 +18,34 @@ Hero* Hero::create(ECamp camp, std::string heroName, EAttackMode attackMode)
 	return nullptr;
 }
 
+void Hero::skillLevelUp(INT32 skillNumber)
+{
 
-bool Hero::init(ECamp camp, std::string heroName, EAttackMode attackMode)
+}
+
+void Hero::castSkill_1()
+{
+
+}
+
+void Hero::castSkill_2(Point center)
+{
+
+}
+
+void Hero::castSkill_3(Point point)
+{
+
+}
+
+void Hero::updateAttackTarget()
+{
+
+
+}
+
+
+bool Hero::init(GameScene* scene, ECamp camp, std::string heroName, EAttackMode attackMode)
 {
 	if (!Sprite::init())
 	{
@@ -31,15 +57,15 @@ bool Hero::init(ECamp camp, std::string heroName, EAttackMode attackMode)
 	initMagicComp(heroName);
 	initExpComp();
 	initRecordComp();
-
+	_combatScene = scene;
 	return true;
-}
+}	  
 
 bool Hero::initHeroData(std::string heroName, ECamp camp, EAttackMode attackMode)
 {
-	ValueMap value = FileUtils::getInstance()->getValueMapFromFile("A:\\major\\exedir\\wzry\\Data\\HeroDataAtEachLevel.plist");
+	ValueMap value = FileUtils::getInstance()->getValueMapFromFile("Data\\HeroDataAtEachLevel.plist");
 	ValueMap heroDataAtEachLevel = value.at(heroName).asValueMap();
-	ValueMap heroData= (FileUtils::getInstance()->getValueMapFromFile("A:\\major\\exedir\\wzry\\Data\\HeroData.plist"))[heroName].asValueMap();
+	ValueMap heroData= (FileUtils::getInstance()->getValueMapFromFile("Data\\HeroData.plist"))[heroName].asValueMap();
 
 	setTexture(StringUtils::format("pictures\\hero\\%s\\%sright1.png", heroName.c_str(),heroName.c_str()));
 	setAnchorPoint(Vec2::ANCHOR_MIDDLE);
@@ -65,8 +91,8 @@ bool Hero::initHeroData(std::string heroName, ECamp camp, EAttackMode attackMode
 
 bool Hero::initHealthComp(std::string heroName)
 {
-	ValueMap heroDataAtEachLevel = (FileUtils::getInstance()->getValueMapFromFile("A:\\major\\exedir\\wzry\\Data\\HeroDataAtEachLevel.plist"))[heroName].asValueMap();
-	ValueMap heroData = (FileUtils::getInstance()->getValueMapFromFile("A:\\major\\exedir\\wzry\\Data\\HeroData.plist"))[heroName].asValueMap();
+	ValueMap heroDataAtEachLevel = (FileUtils::getInstance()->getValueMapFromFile("Data\\HeroDataAtEachLevel.plist"))[heroName].asValueMap();
+	ValueMap heroData = (FileUtils::getInstance()->getValueMapFromFile("Data\\HeroData.plist"))[heroName].asValueMap();
 
 	auto defaultRecoverRate = heroData["HPRecoverRate"].asInt();
 	auto defaultMaxHealth = heroDataAtEachLevel["HP"].asValueVector().at(1).asInt();
@@ -86,8 +112,8 @@ bool Hero::initHealthComp(std::string heroName)
 
 bool Hero::initMagicComp(std::string heroName)
 {
-	ValueMap heroDataAtEachLevel = (FileUtils::getInstance()->getValueMapFromFile("A:\\major\\exedir\\wzry\\Data\\HeroDataAtEachLevel.plist"))[heroName].asValueMap();
-	ValueMap heroData = (FileUtils::getInstance()->getValueMapFromFile("A:\\major\\exedir\\wzry\\Data\\HeroData.plist"))[heroName].asValueMap();
+	ValueMap heroDataAtEachLevel = (FileUtils::getInstance()->getValueMapFromFile("Data\\HeroDataAtEachLevel.plist"))[heroName].asValueMap();
+	ValueMap heroData = (FileUtils::getInstance()->getValueMapFromFile("Data\\HeroData.plist"))[heroName].asValueMap();
 	
 	auto defaultRecoverRate = heroData["MPRecoverRate"].asInt();
 	auto defaultMaxMagic = heroDataAtEachLevel["MP"].asValueVector().at(1).asInt();
@@ -107,7 +133,7 @@ bool Hero::initMagicComp(std::string heroName)
 
 bool Hero::initExpComp()
 {
-	auto levelUpNeededExp = (FileUtils::getInstance()->getValueMapFromFile("A:\\major\\exedir\\wzry\\Data\\CommonData.plist"))["ExpNeeded"].asValueVector().at(1);
+	auto levelUpNeededExp = (FileUtils::getInstance()->getValueMapFromFile("Data\\CommonData.plist"))["ExpNeeded"].asValueVector().at(1);
 	_expComp = ExpComponent::create(levelUpNeededExp.asInt());
 	_expComp->setScale(0.7);
 	_expComp->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
@@ -141,11 +167,24 @@ bool Hero::die()
 
 bool Hero::attack()
 {
+
+
 	return false;
 }
 
 void Hero::takeBuff(Buff* buff)
 {
+	this->getAllBuff().pushBack(buff);
+	_attack += buff->getAttack();
+	_defense += buff->getDefense();
+	_magicDefense += buff->getMagicDefense();
+	_healthComp->changeMaxBy(buff->getHP());
+	_magicComp->changeMaxBy(buff->getMP());
+	_healthComp->changeRecoverRate(buff->getHPRecover());
+	_magicComp->changeRecoverRate(buff->getMPRevoer());
+	_moveSpeed += buff->getMoveSpeed();
+	_minAttackInterval -= buff->getAttackInterval();
+
 }
 
 void Hero::reborn()
@@ -171,46 +210,37 @@ void Hero::heroMove()
 
 void Hero::updateDirection()
 {
-	log("standingAngle : %f", _standingAngle);
 	if (_standingAngle < MIN_DEGREE_IN_RAD || _standingAngle > 15 * MIN_DEGREE_IN_RAD)
 	{
 		_direction = EDirection::RIGHT;
-		log("RIGHT!");
 	}
 	else if (_standingAngle < 3 * MIN_DEGREE_IN_RAD)
 	{
 		_direction = EDirection::UPRIGHT;
-		log("UPRIGHT!");
 	}
 	else if (_standingAngle < 5 * MIN_DEGREE_IN_RAD)
 	{
 		_direction = EDirection::UP;
-		log("UP!");
 	}
 	else if (_standingAngle < 7 * MIN_DEGREE_IN_RAD)
 	{
 		_direction = EDirection::UPLEFT;
-		log("UPLEFT!");
 	}
 	else if (_standingAngle < 9 * MIN_DEGREE_IN_RAD)
 	{
 		_direction = EDirection::LEFT;
-		log("LEFT!");
 	}
 	else if (_standingAngle < 11 * MIN_DEGREE_IN_RAD)
 	{
 		_direction = EDirection::DOWNLEFT;
-		log("DOWNLEFT!");
 	}
 	else if (_standingAngle < 13 * MIN_DEGREE_IN_RAD)
 	{
 		_direction = EDirection::DOWN;
-		log("DOWN!");
 	}
 	else
 	{
 		_direction = EDirection::DOWNRIGHT;
-		log("DOWNRIGHT!");
 	}
 }
 
@@ -245,6 +275,8 @@ void Hero::stopMove()
 		setTexture(StringUtils::format("pictures\\hero\\%s\\%supRight1.png", _heroName.getCString(), _heroName.getCString()));
 		break;
 	}
+
+	_direction = EDirection::NODIR;
 }
 
 void Hero::startAnimation()

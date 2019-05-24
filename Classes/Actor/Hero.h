@@ -8,7 +8,6 @@
 class ExpComponent;
 class StateComponent;
 class Record;
-
 USING_NS_CC;
 
 class Hero :public MovingActor
@@ -21,7 +20,6 @@ class Hero :public MovingActor
 	CC_SYNTHESIZE(StateComponent*, _magicComp, MagicComp);
 	CC_SYNTHESIZE(Vector<Actor*>, _causeDamageActors, CauseDamageActors);
 	CC_SYNTHESIZE(Record*, _recordComp, RecordComp);
-
 public:
 
 	virtual bool die();
@@ -40,10 +38,19 @@ public:
 
 	virtual void stopMove();
 
-	virtual bool init(ECamp camp, std::string heroName, EAttackMode attackMode);
+	virtual bool init(GameScene* scene, ECamp camp, std::string heroName, EAttackMode attackMode);
 
-	static Hero* create(ECamp camp, std::string heroName, EAttackMode attackMode);
+	static Hero* create(ECamp camp, std::string heroName, EAttackMode attackMode,GameScene* scene);
 
+	virtual void skillLevelUp(INT32 skillNumber);
+
+	virtual void castSkill_1();
+	
+	virtual void castSkill_2(Point center);
+	
+	virtual void castSkill_3(Point point);
+
+	virtual void updateAttackTarget();
 protected:
 
 	virtual void updateDirection();
@@ -59,6 +66,7 @@ protected:
 	virtual bool initExpComp();
 
 	virtual bool initRecordComp();
+
 };
 
 #endif // !__HERO_H__
