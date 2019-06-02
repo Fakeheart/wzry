@@ -7,16 +7,13 @@ USING_NS_CC;
 
 enum EBuffType
 {
-	NORMAL,		//∆’Õ®
 	VERTIGO,	//—£‘Œ
 	SILENCE,	//≥¡ƒ¨
-	SLOWDOWN,	//ºıÀŸ
-	REDBUFF,	//∫ÏBUFF
-	BLUEBUFF,	//¿∂BUFF
-	MULTIPLE	//∑÷¡—π•ª˜
+	MULTIPLE,	//∑÷¡—π•ª˜
+	NORMAL
 };
 
-class Buff: public cocos2d::Node
+class Buff : public cocos2d::Node
 {
 public:
 	// Ù–‘
@@ -48,3 +45,4 @@ public:
 };
 
 #endif // !__BUFF_H__
+

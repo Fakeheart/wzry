@@ -4,10 +4,10 @@
 
 #define PI 3.1415926
 
-Projectile* Projectile::create(float damge, float speed, Actor* fromActor, Actor* target)
+Projectile* Projectile::create(const std::string& filename, float damge, float speed, Actor* fromActor, Actor* target)
 {
 	Projectile* projectile = new(std::nothrow)Projectile;
-	if (projectile && projectile->init(damge, speed, fromActor, target))
+	if (projectile && projectile->init(filename, damge, speed, fromActor, target))
 	{
 		projectile->autorelease();
 		return projectile;
@@ -17,14 +17,14 @@ Projectile* Projectile::create(float damge, float speed, Actor* fromActor, Actor
 }
 
 
-bool Projectile::init(float damage, float speed, Actor* fromActor, Actor* target)
+bool Projectile::init(const std::string& filename, float damage, float speed, Actor* fromActor, Actor* target)
 {
 	if (!Sprite::init())
 	{
 		return false;
 	}
 
-	setTexture("arrow.png");
+	setTexture(filename);
 	setPosition(fromActor->getPosition());
 	setScale(0.5);
 
@@ -36,41 +36,13 @@ bool Projectile::init(float damage, float speed, Actor* fromActor, Actor* target
 	return true;
 }
 
-
-float Projectile::getAngle() const
-{
-	auto delta = _target->getPosition() - getPosition();
-	auto dx = delta.x;
-	auto dy = delta.y;
-
-	auto angle = atan(dy / dx);
-	if (angle > 0)
-	{
-		if (dx < 0 && dy < 0)
-		{
-			angle += PI;
-		}
-	}
-	else if (angle < 0)
-	{
-		if (dx < 0 && dy>0)
-		{
-			angle += PI;
-		}
-	}
-	angle = angle / PI * 180;
-
-
-	return 360 - angle;
-}
-
 void Projectile::calculatePosition()
 {
 	auto delta = _target->getPosition() - getPosition();
 	auto distance = delta.length();
 	auto dx = delta.x;
 	auto dy = delta.y;
-	setRotation(getAngle());
+	setRotation(360 - MyMath::getRad(getPosition(), _target->getPosition()) / M_PI * 180);
 	setPosition(getPosition() + Vec2(dx / distance * _speed / 60, dy / distance * _speed / 60));
 }
 

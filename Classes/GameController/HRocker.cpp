@@ -15,7 +15,7 @@ HRocker* HRocker::createHRocker(const char* rockerImageName, const char* rockerB
 }
 void HRocker::rockerInit(const char* rockerImageName, const char* rockerBGImageName, Point position)
 {
-	//添加摇杆背景图  
+	//添加摇杆背景图 
 	Sprite* spRockerBG = Sprite::create(rockerBGImageName);
 	spRockerBG->setVisible(false);
 	spRockerBG->setPosition(position);
@@ -50,8 +50,8 @@ void HRocker::startRocker(bool _isStopOther)
 	rocker->setVisible(true);
 	Sprite* rockerBG = (Sprite*)getChildByTag(TAG_ROCKERBG);
 	rockerBG->setVisible(true);
-	Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(listener->clone(), 2);
-	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listenerKeyBoard, this);
+	//Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(listener, 2);
+	Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(listenerKeyBoard, 2);
 }
 //停止摇杆  
 void HRocker::stopRocker()
@@ -63,29 +63,7 @@ void HRocker::stopRocker()
 	rockerBG->setVisible(false);
 	Director::getInstance()->getEventDispatcher()->removeEventListener(listener);
 }
-//得到两坐标的角度值  
-float HRocker::getRad(Point pos1, Point pos2)
-{
-	//得到两点的坐标x,y坐标值  
-	float px1 = pos1.x;
-	float py1 = pos1.y;
-	float px2 = pos2.x;
-	float py2 = pos2.y;
-	//求出两边长度  
-	float x = px2 - px1;
-	float y = py1 - py2;
-	//开方   与  几次方 公式  
-	float xie = sqrt(pow(x, 2) + pow(y, 2));
-	float cos = x / xie;
-	//反余弦定理，知道两边长求角度：cos = 邻边/斜边  
-	float rad = acos(cos);
-	//当触屏Y坐标 <摇杆的Y坐标时，取反值  
-	if (py1 > py2)
-	{
-		rad = 2 * M_PI - rad;
-	}
-	return rad;
-}
+
 //得到与角度对应的半径为r的圆上一坐标点  
 Point HRocker::getAnglePosition(float r, float angle)
 {
@@ -101,11 +79,10 @@ bool HRocker::onTouchBegan(Touch* touch, Event* event)
 	if (sp->boundingBox().containsPoint(point))
 	{
 		isCanMove = true;
-		return true;
 	}
-	isCanMove = false;
-	return false;
+	return true;
 }
+
 void HRocker::onTouchMoved(Touch* touch, Event* event)
 {
 	if (!isCanMove)
@@ -114,7 +91,7 @@ void HRocker::onTouchMoved(Touch* touch, Event* event)
 	}
 	Sprite* sp = (Sprite*)getChildByTag(TAG_ROCKER);
 	Point point = touch->getLocation();
-	_angle = getRad(rockerBGPosition, point);
+	_angle = MyMath::getRad(rockerBGPosition, point);
 	//判断两个圆心的距离是否大于摇杆背景的半径  
 	if (sqrt(pow(point.x - rockerBGPosition.x, 2) + pow(point.y - rockerBGPosition.y, 2)) >= rockerBGR)
 	{
@@ -127,6 +104,7 @@ void HRocker::onTouchMoved(Touch* touch, Event* event)
 		sp->setPosition(point);
 	}
 }
+
 void HRocker::onTouchEnded(Touch* touch, Event* event)
 {
 	if (!isCanMove)
@@ -140,6 +118,7 @@ void HRocker::onTouchEnded(Touch* touch, Event* event)
 
 	isCanMove = false;
 }
+
 bool HRocker::onPressKey(EventKeyboard::KeyCode keyCode, Event* envet)
 {
 	updateState(keyCode, PRESS);
@@ -199,7 +178,7 @@ bool HRocker::onPressKey(EventKeyboard::KeyCode keyCode, Event* envet)
 	}
 	}
 
-	_angle = getRad(rockerBGPosition, point);
+	_angle = MyMath::getRad(rockerBGPosition, point);
 	rocker->setPosition(ccpAdd(getAnglePosition(rockerBGR, _angle), ccp(rockerBGPosition.x, rockerBGPosition.y)));
 	return true;
 }
@@ -279,7 +258,7 @@ bool HRocker::onReleaseKey(EventKeyboard::KeyCode keyCode, Event * envet)
 			break;
 		}
 		}
-		_angle = getRad(rockerBGPosition, point);
+		_angle = MyMath::getRad(rockerBGPosition, point);
 		rocker->setPosition(ccpAdd(getAnglePosition(rockerBGR, _angle), ccp(rockerBGPosition.x, rockerBGPosition.y)));
 	}
 

@@ -33,7 +33,7 @@ bool StateComponent::init(EStateType stateType, INT32 defaultState, INT32 defaul
 	{
 		setColor(Color3B(81, 205, 22));
 	}
-	else if (_stateType == EStateType::MAGIC)
+	else if(_stateType==EStateType::MAGIC)
 	{
 		setColor(Color3B(39, 123, 221));
 	}
@@ -42,15 +42,14 @@ bool StateComponent::init(EStateType stateType, INT32 defaultState, INT32 defaul
 	auto size = getContentSize();
 	background->setPosition(size / 2);
 	background->setOpacity(200);
-	addChild(background, -1);
-
+	addChild(background,-1);
+	
 	_barRenderer->setZOrder(1);
 
 	schedule(schedule_selector(StateComponent::recover), 1.f, -1, 1.f);
 
 	return true;
 }
-
 
 void StateComponent::recover(float delta)
 {
@@ -60,12 +59,21 @@ void StateComponent::recover(float delta)
 	}
 }
 
-
 void StateComponent::changeMaxBy(INT32 delta)
 {
 	setMaxState(_maxState + delta);
-	setCurrentState(_currentState + delta);
-
+	if (delta > 0)
+	{
+		setCurrentState(_currentState + delta);
+	}
+	if (_maxState < 0)
+	{
+		_maxState = 0;
+	}
+	if (_currentState > _maxState)
+	{
+		_currentState = _maxState;
+	}
 	updatePercent();
 }
 
@@ -76,7 +84,6 @@ void StateComponent::changeMaxTo(INT32 newMaxState)
 
 	updatePercent();
 }
-
 
 void StateComponent::changeStateBy(INT32 delta)
 {
@@ -99,12 +106,10 @@ void StateComponent::changeStateBy(INT32 delta)
 	updatePercent();
 }
 
-
 void StateComponent::updatePercent()
 {
 	setPercent(_currentState * 100.0 / _maxState);
 }
-
 
 void StateComponent::changeRecoverRate(INT32 delta)
 {

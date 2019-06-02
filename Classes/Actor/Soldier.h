@@ -6,35 +6,48 @@
 #include "Component/StateComponent.h"
 #include <vector>
 
+
 USING_NS_CC;
 using std::vector;
 
-class GameScene;
+class SoldierPath;
+class HelloWorld;
 
 class Soldier :public MovingActor
 {
+
 	CC_SYNTHESIZE(bool, _isMovingToDest, IsMovingToDest);
-	CC_SYNTHESIZE(EAttackMode, _attackMode, AttackMode);
-	CC_SYNTHESIZE(Vec2, _firstDest, FirstDest);
-	CC_SYNTHESIZE(Vec2, _secondDest, SecondDest);
-	CC_SYNTHESIZE(bool, _isArrivedFirstDest, IsArrivedFirstDest);
-	CC_SYNTHESIZE(bool, _isDisturbed, IsDisturbed);
+	CC_SYNTHESIZE(String, _soldierType, SoldierType);
 	CC_SYNTHESIZE(Actor*, _instigator, Instigator);
-	CC_SYNTHESIZE(vector<Vec2>, _pathPoints, PathPoints);
-	CC_SYNTHESIZE(Vec2, _nextDest, NextDest);
+	CC_SYNTHESIZE(Vec2, _nextDest, NextDest);	
 
 private:
 
-	void initData(EAttackMode attackMode, ECamp camp, ERoad road);
+	SoldierPath* _soldierPathPoints;
+
+	void initData(HelloWorld* combatScene, EAttackMode attackMode, ECamp camp, ERoad road, SoldierPath* soldierPathPoints);
 
 	void initHealthComp();
 
+	void updateDirection();
+
+	void startAnimation();
+
+	virtual void die();
+
 public:
 
-	virtual bool init(EAttackMode attackMode, ECamp camp, ERoad road,GameScene* scene);
+	void attack(Actor* attackTarget);
 
-	static Soldier* create(EAttackMode attackMode, ECamp camp, ERoad road, GameScene* scene);
+	void moveTo(const Vec2& targetPosition);
 
+	bool updateInstigator();
+
+	void updateState();
+
+	virtual bool init(HelloWorld* combatScene, EAttackMode attackMode, ECamp camp, ERoad road, SoldierPath* soldierPathPoints);
+
+	static Soldier* create(HelloWorld* combatScene, EAttackMode attackMode, ECamp camp, ERoad road, SoldierPath* soldierPathPoints);
 };
 
 
